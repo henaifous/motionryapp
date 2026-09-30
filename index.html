@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motionry · Ride by feel. Train by heart.</title>
+  <meta name="description" content="Motionry fills your screen with your heart rate zone while you ride. GPS recording, Apple Health and Health Connect sync, for iPhone and Android.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+
+<!-- Shared SVG symbols -->
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2" fill="none"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.8-8-11A4.5 4.5 0 0 1 12 6.6a4.5 4.5 0 0 1 8 2.9c0 6.2-8 11-8 11z" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="currentColor"/></symbol>
+  <symbol id="i-rides" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-progress" viewBox="0 0 24 24"><path d="M6 19v-7M12 19V5M18 19v-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-you" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-ios-status" viewBox="0 0 71 13">
+    <rect x="0" y="8" width="3.2" height="4.5" rx=".7" fill="currentColor"/><rect x="4.8" y="5.5" width="3.2" height="7" rx=".7" fill="currentColor"/><rect x="9.6" y="3" width="3.2" height="9.5" rx=".7" fill="currentColor"/><rect x="14.4" y=".5" width="3.2" height="12" rx=".7" fill="currentColor"/>
+    <path d="M32.5 3.7c2.3 0 4.4.9 5.9 2.4l1.1-1.1A9.9 9.9 0 0 0 32.5 2a9.9 9.9 0 0 0-7 3l1.1 1.1a8.3 8.3 0 0 1 5.9-2.4zm0 3.6c1.4 0 2.6.5 3.5 1.4l1.1-1.1a6.6 6.6 0 0 0-9.2 0l1.1 1.1c.9-.9 2.1-1.4 3.5-1.4z" fill="currentColor"/><circle cx="32.5" cy="11" r="1.5" fill="currentColor"/>
+    <rect x="44.5" y=".5" width="23" height="12" rx="3.5" stroke="currentColor" stroke-opacity=".35" fill="none"/><rect x="46" y="2" width="20" height="9" rx="2" fill="currentColor"/><path d="M69 4.5v4c.8-.3 1.5-1.3 1.5-2s-.7-1.7-1.5-2z" fill="currentColor" fill-opacity=".4"/>
+  </symbol>
+  <symbol id="i-android-status" viewBox="0 0 44 16">
+    <path d="M8 13.3L.67 5.97a10.37 10.37 0 0 1 14.66 0z" fill="currentColor"/><path d="M28.67 14.67V1.33L15.33 14.67z" fill="currentColor"/>
+    <rect x="31.75" y="2" width="8.5" height="13" rx="1.5" fill="currentColor"/><rect x="33.5" y=".9" width="5" height="2" rx=".5" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<header class="nav">
+  <div class="nav__bar">
+    <a href="#top" class="brand">
+      <span class="brand__mark"><span></span></span>
+      <span class="brand__name">Motionry</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#zones" class="nav__link">Zones</a>
+      <a href="#map" class="nav__link">Ride map</a>
+      <a href="#share" class="nav__link">Share</a>
+      <a href="#privacy" class="nav__link">Privacy</a>
+      <a href="#pro" class="nav__link">Pro</a>
+      <a href="#get" class="btn btn--dark">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- 01 Hero -->
+  <section id="top" class="hero dark">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <div class="eyebrow eyebrow--live" data-reveal="0">
+          <span class="pulse-dot"><span></span><span></span></span>
+          Cycling · Heart rate zones · iOS &amp; Android
+        </div>
+        <h1 class="display" data-reveal="1">Ride by feel. Train by <span class="zone-text">heart.</span></h1>
+        <p class="lead lead--dark hero__lead" data-reveal="2">Your heart rate zone fills the screen while you ride, so you can hold the right effort without checking numbers. Records with GPS, syncs with Apple Health and Health Connect.</p>
+        <div class="store-buttons" data-reveal="3">
+          <a href="#get" class="store-btn store-btn--light"><small>Download on the</small><strong>App Store</strong></a>
+          <a href="#get" class="store-btn store-btn--glass"><small>Get it on</small><strong>Google Play</strong></a>
+        </div>
+      </div>
+
+      <div class="hero__visual" data-reveal="2">
+        <div class="hero__glow"></div>
+        <div class="hero__phone">
+          <div class="device-scale device-scale--hero">
+            <div class="ios-device ios-device--dark">
+              <div class="ios-device__island"></div>
+              <div class="ios-device__status"><span>9:41</span><svg><use href="#i-ios-status"/></svg></div>
+
+              <div class="ride-screen">
+                <div class="ride-screen__pills">
+                  <div class="glass-pill glass-pill--dark"><span class="rec-dot"></span><span data-live="elapsed">1:18:42</span></div>
+                  <div class="glass-pill glass-pill--dark glass-pill--muted">Watch</div>
+                </div>
+                <div class="ride-screen__metrics">
+                  <div>
+                    <div class="ride-label">Speed</div>
+                    <div class="ride-value" data-live="speed">24.1</div>
+                    <div class="ride-label">km/h</div>
+                  </div>
+                  <div class="ride-screen__hr">
+                    <div class="ride-label">Heart rate</div>
+                    <div class="ride-value zone-text" data-live="hr">141</div>
+                    <div class="ride-label">bpm · <span data-live="zone-label">Z3 Tempo</span></div>
+                  </div>
+                </div>
+                <div class="zone-segments" data-live="segments">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="ride-screen__stats">
+                  <div><div class="ride-label">Distance</div><div class="ride-stat" data-live="distance">32.6</div></div>
+                  <div><div class="ride-label">Avg HR</div><div class="ride-stat">141</div></div>
+                  <div><div class="ride-label">Climb</div><div class="ride-stat">+412</div></div>
+                </div>
+                <div class="ride-screen__map map-bg map-bg--dark">
+                  <svg class="ride-screen__route" viewBox="0 0 200 200">
+                    <path data-route stroke="rgba(255,255,255,.22)" stroke-width="5"/>
+                    <path data-route data-live="route-progress" class="zone-stroke" pathLength="100" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 100"/>
+                    <circle data-live="route-dot" cx="42" cy="150" r="6" fill="#fff" stroke="#000" stroke-width="2.5"/>
+                  </svg>
+                  <div class="ride-controls">
+                    <div class="ride-controls__side"><svg><use href="#i-lock"/></svg></div>
+                    <div class="ride-controls__pause"><span></span><span></span></div>
+                    <div class="ride-controls__side"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z" fill="#fff"/></svg></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ios-device__home"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="float-card float-card--alert" data-live="alert">
+          <span class="float-card__bar"></span>
+          <div>
+            <div class="float-card__title">Zone 5 · ease off?</div>
+            <div class="float-card__text">Longer than any ride this month.</div>
+          </div>
+        </div>
+        <div class="float-card float-card--watch">
+          <div class="mono-label">Apple Watch</div>
+          <div class="float-card__hr">
+            <svg class="zone-fill"><use href="#i-heart"/></svg>
+            <strong data-live="hr">141</strong><span>bpm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container live-strip">
+      <div class="live-strip__label">
+        <div class="mono-label">Live · last 60 s</div>
+        <div class="live-strip__zone zone-text" data-live="zone-long">Z3 · Tempo · 141 bpm</div>
+      </div>
+      <svg class="live-strip__chart" viewBox="0 0 1000 120" preserveAspectRatio="none">
+        <line x1="0" y1="105.9" x2="1000" y2="105.9"/>
+        <line x1="0" y1="79.1" x2="1000" y2="79.1"/>
+        <line x1="0" y1="53.6" x2="1000" y2="53.6"/>
+        <line x1="0" y1="26.8" x2="1000" y2="26.8"/>
+        <polyline data-live="spark" class="zone-stroke" points=""/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 02 Zones -->
+  <section id="zones" class="section section--zones">
+    <div class="container stack-56">
+      <div class="split-head">
+        <h2 class="h1" data-reveal="0">Five zones. The only colour in the app.</h2>
+        <p class="lead" data-reveal="1">Set from your age or your known max, updated live as you change it. Everything else stays black on white, so the one colour on screen always means effort.</p>
+      </div>
+      <div class="zones" data-reveal="1">
+        <div class="zones__list" role="listbox" aria-label="Heart rate zones" data-zone-list></div>
+        <div class="zone-detail" data-zone-detail>
+          <div class="zone-detail__top"><span data-zone-field="title"></span><span>Max 184 bpm</span></div>
+          <div>
+            <div class="zone-detail__range" data-zone-field="range"></div>
+            <div class="zone-detail__pct">bpm · <span data-zone-field="pct"></span> of max</div>
+          </div>
+          <div class="zone-detail__desc" data-zone-field="desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Ride map -->
+  <section id="map" class="section section--flush">
+    <div class="container panel panel--grey ride-map">
+      <div class="stack-22">
+        <div class="badge" data-reveal="0"><svg><use href="#i-lock"/></svg>Pro</div>
+        <h2 class="h2" data-reveal="1">See where the ride got hard.</h2>
+        <p class="lead" data-reveal="2">After each ride the route is coloured by heart rate zone. Tap any point for heart rate, speed and climb, plus 5 km splits.</p>
+        <div class="splits" data-reveal="3">
+          <div class="split"><span class="split__km">0–5</span><span class="bar"><span class="bar__fill" style="--w:62%;--c:var(--z3)"></span></span><span class="split__hr">131 bpm</span></div>
+          <div class="split"><span class="split__km">5–10</span><span class="bar"><span class="bar__fill" style="--w:78%;--c:var(--z3)"></span></span><span class="split__hr">144 bpm</span></div>
+          <div class="split"><span class="split__km">10–15</span><span class="bar"><span class="bar__fill" style="--w:90%;--c:var(--z4)"></span></span><span class="split__hr">158 bpm</span></div>
+          <div class="split"><span class="split__km">15–20</span><span class="bar"><span class="bar__fill" style="--w:100%;--c:var(--z5)"></span></span><span class="split__hr">171 bpm</span></div>
+        </div>
+      </div>
+
+      <div class="ride-map__card map-bg map-bg--light" data-reveal="1">
+        <svg class="ride-map__route" viewBox="0 0 200 200">
+          <path data-route stroke="#fff" stroke-width="9" stroke-linejoin="round"/>
+          <g data-map-segments>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="18 100" stroke-dashoffset="0"/>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="22 100" stroke-dashoffset="-18"/>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="15 100" stroke-dashoffset="-40"/>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="9 100" stroke-dashoffset="-55"/>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="18 100" stroke-dashoffset="-64"/>
+            <path data-route pathLength="100" stroke-width="5" stroke-dasharray="18 100" stroke-dashoffset="-82"/>
+          </g>
+          <circle cx="42" cy="150" r="5" fill="#000" stroke="#fff" stroke-width="2.5"/>
+          <circle class="tip-fill" cx="168" cy="104" r="7" stroke="#fff" stroke-width="3"/>
+        </svg>
+        <div class="ride-map__ping tip-border"></div>
+        <div class="ride-map__tip">
+          <div class="ride-map__tip-main"><span class="tip-bg"></span><strong data-tip="main">176 bpm</strong></div>
+          <div class="ride-map__tip-sub" data-tip="sub">Z5 · km 18.4</div>
+        </div>
+        <div class="segmented segmented--glass" role="tablist" aria-label="Colour route by" data-map-modes>
+          <button type="button" role="tab" class="is-active" data-mode="hr">Heart rate</button>
+          <button type="button" role="tab" data-mode="speed">Speed</button>
+          <button type="button" role="tab" data-mode="climb">Climb</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Everyday -->
+  <section class="section section--flush">
+    <div class="container stack-48">
+      <h2 class="h2 measure-760" data-reveal="0">Map first. One button. Everything else when you need it.</h2>
+      <div class="bento" data-seen>
+        <div class="tile" data-reveal="0">
+          <div class="tile__label">Resting HR</div>
+          <div>
+            <div class="stat"><strong class="stat__xl">52</strong><span>bpm</span></div>
+            <div class="tile__note">2 below average</div>
+          </div>
+        </div>
+        <div class="tile" data-reveal="1">
+          <div class="tile__label">This week</div>
+          <div class="week">
+            <div class="week__day"><span class="week__bar" style="--h:0%"></span><span>M</span></div>
+            <div class="week__day"><span class="week__bar is-on" style="--h:62%"></span><span>T</span></div>
+            <div class="week__day"><span class="week__bar" style="--h:0%"></span><span>W</span></div>
+            <div class="week__day"><span class="week__bar is-on" style="--h:38%"></span><span>T</span></div>
+            <div class="week__day"><span class="week__bar" style="--h:0%"></span><span>F</span></div>
+            <div class="week__day"><span class="week__bar is-on" style="--h:100%"></span><span>S</span></div>
+            <div class="week__day"><span class="week__bar is-on" style="--h:54%"></span><span>S</span></div>
+          </div>
+          <div>
+            <div class="stat"><strong class="stat__lg">87.4</strong><span>km</span></div>
+            <div class="tile__note">4 rides · 3h 42m</div>
+          </div>
+        </div>
+        <div class="tile tile--dark" data-reveal="2">
+          <div class="tile__head"><span class="tile__label">Time in zones</span><span class="mono-label">Saturday loop</span></div>
+          <div class="tiz">
+            <div class="tiz__row"><span>Z1</span><span class="bar bar--dark"><span class="bar__fill" style="--w:23.5%;--c:var(--z1-d)"></span></span><strong>8%</strong></div>
+            <div class="tiz__row"><span>Z2</span><span class="bar bar--dark"><span class="bar__fill" style="--w:100%;--c:var(--z2-d)"></span></span><strong>34%</strong></div>
+            <div class="tiz__row"><span>Z3</span><span class="bar bar--dark"><span class="bar__fill" style="--w:91.2%;--c:var(--z3)"></span></span><strong>31%</strong></div>
+            <div class="tiz__row"><span>Z4</span><span class="bar bar--dark"><span class="bar__fill" style="--w:55.9%;--c:var(--z4)"></span></span><strong>19%</strong></div>
+            <div class="tiz__row"><span>Z5</span><span class="bar bar--dark"><span class="bar__fill" style="--w:23.5%;--c:var(--z5-d)"></span></span><strong>8%</strong></div>
+          </div>
+        </div>
+        <div class="tile tile--sources" data-reveal="1">
+          <div class="tile__label">Heart rate from</div>
+          <div class="source source--active">
+            <span class="source__icon"><span class="source__watch"></span></span>
+            <div class="source__text"><strong>Apple Watch</strong><span><span data-live="hr">141</span> bpm now</span></div>
+            <span class="source__check"><svg><use href="#i-check"/></svg></span>
+          </div>
+          <div class="source">
+            <span class="source__icon"><span class="source__strap"></span></span>
+            <div class="source__text"><strong>Polar H10</strong><span>Bluetooth chest strap</span></div>
+          </div>
+        </div>
+        <div class="tile tile--wide" data-reveal="2">
+          <div class="tile__brandrow">
+            <span class="app-icon"><svg><use href="#i-heart"/></svg></span>
+            <span class="tile__label">Apple Health · Health Connect</span>
+          </div>
+          <div class="tile__headline">Read on your phone, never sent to our servers.</div>
+          <div class="chips">
+            <span class="chip">Writes cycling workouts and routes</span>
+            <span class="chip">Reads heart rate and resting HR</span>
+            <span class="chip">GPS only while you ride</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Share -->
+  <section id="share" class="section dark section--share">
+    <div class="container two-col">
+      <div class="stack-22">
+        <div class="eyebrow" data-reveal="0">Share · Pro</div>
+        <h2 class="display-md" data-reveal="1">Share rides that move.</h2>
+        <p class="lead lead--dark" data-reveal="2">Post a 2D or 3D flyover of your route, or put a transparent path sticker on your own photo. Every rider can share the map image.</p>
+      </div>
+      <div class="share" data-reveal="2">
+        <div class="share__stage">
+          <div class="share-card share-card--video map-bg map-bg--dark">
+            <svg class="share-card__route" viewBox="0 0 200 200">
+              <path data-route stroke="rgba(255,255,255,.3)" stroke-width="5"/>
+              <path data-route data-live="fly-route" pathLength="100" stroke="var(--z3)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 100"/>
+            </svg>
+            <div class="share-card__top"><strong>Motionry</strong><span class="tag tag--glass">3D video</span></div>
+            <div class="share-card__stats"><div class="share-card__km">27.4<small> km</small></div><div class="share-card__bpm">152 bpm</div></div>
+            <div class="share-card__progress"><span data-live="fly-progress"></span></div>
+          </div>
+          <div class="share-card share-card--photo">
+            <svg class="share-card__sticker" viewBox="0 0 200 200">
+              <path data-route stroke="#000" stroke-width="12" stroke-linejoin="round"/>
+              <path data-route stroke="#fff" stroke-width="6" stroke-linejoin="round"/>
+            </svg>
+            <span class="tag tag--light share-card__tag">Sticker</span>
+            <div class="share-card__summary"><strong>42.8 km</strong><span>1:46:21 · 24.1 km/h · 141 bpm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Platforms -->
+  <section class="section section--platforms">
+    <div class="container platforms">
+      <div class="platforms__head">
+        <h2 class="h1 measure-860" data-reveal="0">Built natively for iPhone and Android.</h2>
+        <p class="lead measure-560" data-reveal="1">Liquid Glass controls on iOS 26, Material surfaces on Android. Same zones, same rides, same data you own.</p>
+      </div>
+      <div class="platforms__devices">
+        <figure class="platform" data-reveal="1">
+          <div class="platform__frame platform__frame--ios">
+            <div class="device-scale">
+              <div class="ios-device">
+                <div class="ios-device__island"></div>
+                <div class="ios-device__status"><span>9:41</span><svg><use href="#i-ios-status"/></svg></div>
+                <div class="home-screen">
+                  <div class="home-screen__map map-bg map-bg--light"></div>
+                  <div class="home-screen__top home-screen__top--ios">
+                    <div class="glass-pill glass-pill--light glass-pill--round">J</div>
+                    <div class="glass-pill glass-pill--light"><span class="gps-dot"></span>GPS ready</div>
+                  </div>
+                  <div class="home-sheet home-sheet--ios">
+                    <div class="home-sheet__grabber"></div>
+                    <div class="home-sheet__title">Morning, Jonas</div>
+                    <div class="home-sheet__start"><svg><use href="#i-play"/></svg>Start ride</div>
+                    <div class="home-sheet__cards">
+                      <div class="mini-card"><div class="mini-card__label">Resting HR</div><div class="mini-card__value"><strong>52</strong><span>bpm</span></div><div class="mini-card__note">2 below average</div></div>
+                      <div class="mini-card"><div class="mini-card__label">This week</div><div class="mini-card__value"><strong>87.4</strong><span>km</span></div><div class="mini-card__note">4 rides · 3h 42m</div></div>
+                    </div>
+                  </div>
+                  <nav class="ios-tabbar">
+                    <div class="ios-tabbar__item is-active"><svg><use href="#i-home"/></svg>Home</div>
+                    <div class="ios-tabbar__item"><svg><use href="#i-rides"/></svg>Rides</div>
+                    <div class="ios-tabbar__item"><svg><use href="#i-progress"/></svg>Progress</div>
+                    <div class="ios-tabbar__item"><svg><use href="#i-you"/></svg>You</div>
+                  </nav>
+                </div>
+                <div class="ios-device__home"></div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="mono-caption">iOS 26 · Apple Health</figcaption>
+        </figure>
+
+        <figure class="platform platform--offset" data-reveal="2">
+          <div class="platform__frame platform__frame--android">
+            <div class="device-scale">
+              <div class="android-device">
+                <div class="android-device__status"><span>9:30</span><span class="android-device__camera"></span><svg><use href="#i-android-status"/></svg></div>
+                <div class="home-screen home-screen--android">
+                  <div class="home-screen__map home-screen__map--android map-bg map-bg--light"></div>
+                  <div class="home-screen__top home-screen__top--android">
+                    <div class="m3-chip m3-chip--round">J</div>
+                    <div class="m3-chip"><span class="gps-dot"></span>GPS ready</div>
+                  </div>
+                  <div class="home-sheet home-sheet--android">
+                    <div class="home-sheet__grabber"></div>
+                    <div class="home-sheet__title">Morning, Jonas</div>
+                    <div class="home-sheet__start"><svg><use href="#i-play"/></svg>Start ride</div>
+                    <div class="home-sheet__cards">
+                      <div class="mini-card"><div class="mini-card__label">Resting HR</div><div class="mini-card__value"><strong>52</strong><span>bpm</span></div><div class="mini-card__note">2 below average</div></div>
+                      <div class="mini-card"><div class="mini-card__label">This week</div><div class="mini-card__value"><strong>87.4</strong><span>km</span></div><div class="mini-card__note">4 rides · 3h 42m</div></div>
+                    </div>
+                  </div>
+                  <nav class="m3-navbar">
+                    <div class="m3-navbar__item is-active"><span><svg><use href="#i-home"/></svg></span>Home</div>
+                    <div class="m3-navbar__item"><span><svg><use href="#i-rides"/></svg></span>Rides</div>
+                    <div class="m3-navbar__item"><span><svg><use href="#i-progress"/></svg></span>Progress</div>
+                    <div class="m3-navbar__item"><span><svg><use href="#i-you"/></svg></span>You</div>
+                  </nav>
+                </div>
+                <div class="android-device__gesture"></div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="mono-caption">Android · Health Connect</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 Privacy -->
+  <section id="privacy" class="section section--flush">
+    <div class="container stack-48">
+      <div class="split-head">
+        <div class="stack-18">
+          <div class="eyebrow eyebrow--light" data-reveal="0">Privacy</div>
+          <h2 class="h1" data-reveal="1">Your heart stays on your phone.</h2>
+        </div>
+        <div class="stack-22 privacy__intro" data-reveal="2">
+          <p class="lead">Health data is read on your phone and never sent to our servers. Every permission is explained before the system asks, and each one can be skipped.</p>
+          <div class="segmented segmented--grey" role="tablist" aria-label="Platform" data-platforms>
+            <button type="button" role="tab" class="is-active" data-platform="ios">iPhone</button>
+            <button type="button" role="tab" data-platform="android">Android</button>
+          </div>
+        </div>
+      </div>
+      <div class="privacy-cards" data-reveal="1" data-privacy-cards></div>
+    </div>
+  </section>
+
+  <!-- 08 Pro -->
+  <section id="pro" class="section section--flush">
+    <div class="container stack-48">
+      <h2 class="h1 measure-760" data-reveal="0">Everything you need to ride. Pro for the deep dive.</h2>
+      <div class="plans">
+        <div class="plan" data-reveal="0">
+          <div class="plan__name">Every rider</div>
+          <ul class="checklist">
+            <li><svg><use href="#i-check"/></svg>Live heart rate zones</li>
+            <li><svg><use href="#i-check"/></svg>GPS ride recording</li>
+            <li><svg><use href="#i-check"/></svg>Apple Health and Health Connect sync</li>
+            <li><svg><use href="#i-check"/></svg>Share the map image</li>
+          </ul>
+        </div>
+        <div class="plan plan--pro" data-reveal="1">
+          <div class="plan__zones"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="plan__name">Pro</div>
+          <ul class="checklist checklist--dark">
+            <li><svg><use href="#i-check"/></svg>Heart rate and elevation charts</li>
+            <li><svg><use href="#i-check"/></svg>Ride map coloured by zone</li>
+            <li><svg><use href="#i-check"/></svg>5 km splits with heart rate, speed and climb</li>
+            <li><svg><use href="#i-check"/></svg>2D and 3D flyover videos and path stickers</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note" data-reveal="0">
+        <p>Pro is unlocked inside the app through your App Store or Google Play account. Nothing is sold on this website.</p>
+        <a href="#get" class="btn btn--dark btn--lg">Get the app</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 Download -->
+  <section id="get" class="download dark">
+    <div class="container download__inner">
+      <div class="download__cta">
+        <h2 class="display-xl" data-reveal="0">Hold the<br>right <span class="zone-text">effort.</span></h2>
+        <div class="store-buttons" data-reveal="1">
+          <a href="#" class="store-btn store-btn--light"><small>Download on the</small><strong>App Store</strong></a>
+          <a href="#" class="store-btn store-btn--glass"><small>Get it on</small><strong>Google Play</strong></a>
+        </div>
+      </div>
+      <footer class="footer">
+        <div class="brand brand--footer">
+          <span class="brand__mark"><span></span></span>
+          <span class="brand__name">Motionry</span>
+        </div>
+        <nav class="footer__links" aria-label="Footer">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Support</a>
+        </nav>
+      </footer>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
