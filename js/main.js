@@ -36,20 +36,53 @@ const MAP_MODES = {
   },
 };
 
-const PRIVACY = {
-  ios: [
-    { tag: 'Location', src: 'While Using App', title: 'GPS only while you ride.', items: ['Draws your route and measures speed and distance', 'Switches off the moment a ride ends'] },
-    { tag: 'Motionry writes', src: 'Apple Health', title: 'Your rides land in Health.', items: ['Cycling workouts and routes', 'Active energy, heart rate samples'] },
-    { tag: 'Motionry reads', src: 'Apple Health', title: 'Only what zones need.', items: ['Heart rate and resting heart rate', 'Date of birth and weight'] },
-    { tag: 'Sensors', src: 'Bluetooth', title: 'Asked only when you connect.', items: ['Apple Watch works without it', 'Chest straps like Polar H10 ask on Connect'] },
-  ],
-  android: [
-    { tag: 'Location', src: 'While using the app', title: 'GPS only while you ride.', items: ['Draws your route and measures speed and distance', 'Rides record in the background with an ongoing notification, so “Allow all the time” is never needed'] },
-    { tag: 'Motionry writes', src: 'Health Connect', title: 'Your rides land in Health Connect.', items: ['Exercise sessions and routes', 'Active calories, heart rate'] },
-    { tag: 'Motionry reads', src: 'Health Connect', title: 'Only what zones need.', items: ['Heart rate and resting heart rate', 'Date of birth and weight'] },
-    { tag: 'Sensors', src: 'Bluetooth', title: 'Asked only when you connect.', items: ['Nothing is requested until you tap Connect', 'Works with chest straps like Polar H10'] },
-  ],
+const SPORTS = {
+  ride: { name: 'Ride', elapsedStart: 4722 },
+  run: { name: 'Run', elapsedStart: 2592 },
+  walk: { name: 'Walk', elapsedStart: 2285 },
 };
+
+/**
+ * Hero screen metrics for each sport at simulated time t and heart rate hr.
+ * Returns the big left metric plus the three stats under the zone bar.
+ */
+function sportMetrics(sport, t, hr) {
+  if (sport === 'run') {
+    const pace = Math.round(330 - (hr - 106) * 1.2 + Math.sin(t * 0.7) * 4);
+    return {
+      label: 'Pace',
+      value: `${Math.floor(pace / 60)}:${String(pace % 60).padStart(2, '0')}`,
+      unit: '/km',
+      stats: [
+        ['Distance', (8.42 + t * 0.003).toFixed(2), 'km'],
+        ['Cadence', String(170 + Math.round(Math.sin(t) * 2)), 'spm'],
+        ['Stride', '1.14', 'm'],
+      ],
+    };
+  }
+  if (sport === 'walk') {
+    return {
+      label: 'Steps',
+      value: (6812 + Math.floor(t * 1.8)).toLocaleString('en-US'),
+      unit: 'today +4,930',
+      stats: [
+        ['Distance', (4.21 + t * 0.0012).toFixed(2), 'km'],
+        ['Pace', '12:21', '/km'],
+        ['Calories', String(238 + Math.floor(t * 0.1)), 'kcal'],
+      ],
+    };
+  }
+  return {
+    label: 'Speed',
+    value: (20 + (hr - 105) * 0.19 + Math.sin(t * 0.7) * 0.5).toFixed(1),
+    unit: 'km/h',
+    stats: [
+      ['Distance', (32.6 + t * 0.007).toFixed(1), 'km'],
+      ['Avg HR', '141', ''],
+      ['Climb', '+412', 'm'],
+    ],
+  };
+}
 
 /* Helpers
    ========================================================================== */
@@ -93,12 +126,14 @@ function initRoutes() {
   $$('path[data-route]').forEach((path) => path.setAttribute('d', ROUTE));
 }
 
-/* Live ride simulation (hero, strip, share card)
+/* Live simulation (hero, strip, watch, share card)
    ========================================================================== */
 
 function initLiveRide() {
   const root = document.documentElement;
-  const segments = $$('[data-live="segments"] span');
+  const segmentGroups = $$('[data-live="segments"]').map((group) => [...group.children]);
+  const metrics = $('[data-live="metrics"]');
+  const sportIcon = $('[data-live="sport-icon"]');
   const routeProgress = $('[data-live="route-progress"]');
   const routeDot = $('[data-live="route-dot"]');
   const routeLength = routeProgress.getTotalLength();
@@ -108,11 +143,13 @@ function initLiveRide() {
   const flyProgress = $('[data-live="fly-progress"]');
 
   const STEP = 0.4; // simulated seconds per tick
-  const RIDE_START = 4722; // elapsed seconds shown at t = 0
   let t = 0;
+  let sport = 'ride';
 
   function render() {
-    const hr = heartRateAt(t);
+    const baseHr = heartRateAt(t);
+    // Walks sit lower on the heart rate curve
+    const hr = sport === 'walk' ? Math.round(92 + (baseHr - 106) * 0.32) : baseHr;
     const zi = zoneIndexOf(hr);
     const zone = ZONES[zi];
 
@@ -121,11 +158,19 @@ function initLiveRide() {
     setText('hr', hr);
     setText('zone-label', `${zone.key} ${zone.name}`);
     setText('zone-long', `${zone.key} · ${zone.name} · ${hr} bpm`);
-    setText('speed', (20 + (hr - 105) * 0.19 + Math.sin(t * 0.7) * 0.5).toFixed(1));
-    setText('elapsed', formatDuration(RIDE_START + t));
-    setText('distance', (32.6 + t * 0.007).toFixed(1));
+    setText('elapsed', formatDuration(SPORTS[sport].elapsedStart + t));
 
-    segments.forEach((seg, i) => seg.classList.toggle('is-active', i === zi));
+    const m = sportMetrics(sport, t, hr);
+    setText('m1-label', m.label);
+    setText('m1', m.value);
+    setText('m1-unit', m.unit);
+    m.stats.forEach(([label, value, unit], i) => {
+      setText(`stat-label-${i}`, label);
+      setText(`stat-value-${i}`, value);
+      setText(`stat-unit-${i}`, unit);
+    });
+
+    segmentGroups.forEach((segs) => segs.forEach((seg, i) => seg.classList.toggle('is-active', i === zi)));
     alert.classList.toggle('is-shown', zi === 4);
 
     const progress = (t * 1.2) % 100;
@@ -134,6 +179,7 @@ function initLiveRide() {
     routeDot.setAttribute('cx', point.x.toFixed(1));
     routeDot.setAttribute('cy', point.y.toFixed(1));
 
+    // The live strip always charts the ride curve, independent of the hero sport
     const points = [];
     for (let i = 0; i < 60; i++) {
       const sampleT = t - (59 - i) * 0.5;
@@ -146,7 +192,13 @@ function initLiveRide() {
     flyProgress.style.width = `${fly.toFixed(1)}%`;
   }
 
-  render();
+  initSegmented($('[data-sports]'), 'data-sport', (next) => {
+    sport = next;
+    setText('sport-name', SPORTS[sport].name);
+    sportIcon.setAttribute('href', `#i-${sport}`);
+    metrics.classList.toggle('ride-screen__metrics--compact', sport === 'walk');
+    render();
+  });
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -236,22 +288,21 @@ function initRideMap() {
   });
 }
 
-function initPrivacy() {
-  const container = $('[data-privacy-cards]');
+/* Android waitlist
+   ========================================================================== */
 
-  initSegmented($('[data-platforms]'), 'data-platform', (platform) => {
-    container.innerHTML = PRIVACY[platform].map((card) => `
-      <article class="privacy-card">
-        <div class="privacy-card__meta">
-          <span class="privacy-card__tag">${card.tag}</span>
-          <span class="privacy-card__src">${card.src}</span>
-        </div>
-        <h3 class="privacy-card__title">${card.title}</h3>
-        <ul class="privacy-card__items">
-          ${card.items.map((item) => `<li>${item}</li>`).join('')}
-        </ul>
-      </article>
-    `).join('');
+function initWaitlist() {
+  const form = $('[data-waitlist]');
+  const done = $('[data-waitlist-done]');
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = form.elements.email.value.trim();
+    if (!email.includes('@')) return;
+    // TODO: send the address to the waitlist backend once it exists
+    $('[data-waitlist-email]', done).textContent = email;
+    form.hidden = true;
+    done.hidden = false;
   });
 }
 
@@ -288,5 +339,5 @@ initRoutes();
 initLiveRide();
 initZones();
 initRideMap();
-initPrivacy();
+initWaitlist();
 initReveal();
