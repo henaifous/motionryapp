@@ -2,36 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Privacy Policy · Motionry</title>
   <meta name="description" content="How Motionry handles your data: heart rate, routes and Apple Health records stay on your iPhone. Anonymous usage analytics with Google Analytics for Firebase, no ads and no tracking.">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="canonical" href="https://motionryapp.com/privacy.html">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/privacy.js" defer></script>
 </head>
 <body>
 
-<!-- Shared SVG symbols -->
 <svg class="sprite" aria-hidden="true">
   <symbol id="i-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2.1 1-3.3-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.2 1.2.1 2.3-.6 3.1-1.5z"/></symbol>
 </svg>
 
-<header class="nav">
+<header class="nav is-stuck">
   <div class="nav__bar">
-    <a href="index.html" class="brand">
-      <span class="brand__mark"><span></span></span>
+    <a href="index.html" class="brand" aria-label="Motionry home">
+      <img src="assets/img/icon-192.png" alt="" width="34" height="34" class="brand__icon">
       <span class="brand__name">Motionry</span>
     </a>
-    <nav class="nav__links" aria-label="Primary">
+    <nav class="nav__links" id="nav-links" aria-label="Primary">
+      <a href="index.html#story" class="nav__link">App</a>
       <a href="index.html#zones" class="nav__link">Zones</a>
-      <a href="index.html#map" class="nav__link">Route map</a>
-      <a href="index.html#iphone" class="nav__link">iPhone &amp; Watch</a>
-      <a href="privacy.html" class="nav__link" aria-current="page">Privacy</a>
+      <a href="index.html#sports" class="nav__link">Sports</a>
+      <a href="index.html#watch" class="nav__link">Watch</a>
+      <a href="index.html#share" class="nav__link">Share</a>
+      <a href="privacy.html" class="nav__link is-active" aria-current="page">Privacy</a>
       <a href="index.html#pro" class="nav__link">Pro</a>
-      <a href="index.html#get" class="btn btn--dark btn--icon"><svg><use href="#i-apple"/></svg>App Store</a>
     </nav>
+    <a href="index.html#get" class="btn btn--lime btn--sm nav__cta"><svg><use href="#i-apple"/></svg><span>Get the app</span></a>
   </div>
 </header>
 
@@ -40,9 +46,9 @@
   <!-- Hero -->
   <section class="policy-hero">
     <div class="container stack-22">
-      <div class="eyebrow eyebrow--light">Privacy policy</div>
+      <div class="eyebrow">Privacy policy</div>
       <h1 class="display-md">Your heart stays on your phone.</h1>
-      <p class="lead">Motionry records your rides, runs and walks on your iPhone and Apple Watch. There is no account, no ads and no Motionry server holding your activities. This page explains what stays on your device, what the app sends, and why.</p>
+      <p class="lead lead--dark">Motionry records your rides, runs and walks on your iPhone and Apple Watch. There is no account, no ads and no Motionry server holding your activities. This page explains what stays on your device, what the app sends, and why.</p>
       <div class="policy-meta">
         <span>Updated 1 October 2026</span>
         <span>Motionry for iPhone &amp; Apple Watch</span>
@@ -50,8 +56,8 @@
     </div>
   </section>
 
-  <!-- At a glance -->
-  <section class="section section--flush">
+  <!-- At a glance + policy -->
+  <section class="policy-page">
     <div class="container">
       <div class="policy-summary">
         <div class="policy-summary__item">
@@ -76,10 +82,6 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Policy -->
-  <section class="section section--flush">
     <div class="container policy">
       <nav class="policy-toc" aria-label="On this page">
         <div class="mono-label">On this page</div>
@@ -231,34 +233,37 @@
     </div>
   </section>
 
-  <!-- Download + footer -->
-  <section class="download dark policy-end">
+  <!-- Download -->
+  <section class="download policy-end">
+    <div class="download__zones" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     <div class="container download__inner">
       <div class="download__cta">
-        <h2 class="h2">Hold the right <span class="zone-text">effort.</span></h2>
-        <div class="store-buttons">
-          <a href="index.html#get" class="store-btn store-btn--light">
+        <h2 class="display-md">Hold the right <span class="hl-ink">effort.</span></h2>
+        <div class="download__buttons">
+          <a href="https://apps.apple.com/app/motionry-run-ride-walk/id6770678614" class="store-btn store-btn--ink">
             <svg class="store-btn__logo"><use href="#i-apple"/></svg>
             <span class="store-btn__text"><small>Download on the</small><strong>App Store</strong></span>
           </a>
         </div>
       </div>
-
-      <footer class="footer">
-        <div class="brand brand--footer">
-          <span class="brand__mark"><span></span></span>
-          <span class="brand__name">Motionry</span>
-        </div>
-        <nav class="footer__links" aria-label="Footer">
-          <a href="privacy.html" aria-current="page">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="mailto:support@motionryapp.com">Support</a>
-          <a href="https://www.instagram.com/motionry.app/" target="_blank" rel="noopener">Instagram</a>
-        </nav>
-      </footer>
     </div>
   </section>
-
 </main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a href="index.html" class="brand brand--footer" aria-label="Motionry home">
+      <img src="assets/img/icon-192.png" alt="" width="34" height="34" class="brand__icon" loading="lazy">
+      <span class="brand__name">Motionry</span>
+    </a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="privacy.html" aria-current="page">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:support@motionryapp.com">Support</a>
+      <a href="https://www.instagram.com/motionry.app/" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+    <p class="footer__legal">© 2026 Motionry. Apple, the Apple logo, iPhone and Apple Watch are trademarks of Apple Inc.</p>
+  </div>
+</footer>
 </body>
 </html>

@@ -1,290 +1,460 @@
 /* ==========================================================================
-   Motionry — website interactions
+   Motionry website: motion and interactions.
+   No dependencies. Everything respects prefers-reduced-motion.
    ========================================================================== */
 
 document.documentElement.classList.add('js');
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 /* Data
    ========================================================================== */
 
 const ZONES = [
-  { key: 'Z1', name: 'Recovery', desc: 'Easy spin', range: '<110', pct: 'under 60%', color: 'var(--z1)', colorDark: 'var(--z1-d)', fg: '#fff' },
-  { key: 'Z2', name: 'Endurance', desc: 'Can hold a conversation', range: '110–128', pct: '60–69%', color: 'var(--z2)', colorDark: 'var(--z2-d)', fg: '#fff' },
-  { key: 'Z3', name: 'Tempo', desc: 'Comfortably hard', range: '129–146', pct: '70–79%', color: 'var(--z3)', colorDark: 'var(--z3)', fg: '#000' },
-  { key: 'Z4', name: 'Threshold', desc: 'Hard, about 20 minutes', range: '147–165', pct: '80–89%', color: 'var(--z4)', colorDark: 'var(--z4)', fg: '#000' },
-  { key: 'Z5', name: 'Max', desc: 'Sprints, under a minute', range: '166+', pct: '90%+', color: 'var(--z5)', colorDark: 'var(--z5-d)', fg: '#000' },
+  { key: 'Z1', name: 'Recovery', desc: 'Easy spin. Warm-ups, cool-downs and rest days.', from: 0, to: 0.6 },
+  { key: 'Z2', name: 'Endurance', desc: 'Can hold a conversation. Where the long, easy miles build your base.', from: 0.6, to: 0.7 },
+  { key: 'Z3', name: 'Tempo', desc: 'Comfortably hard. Steady work you can sustain for a while.', from: 0.7, to: 0.8 },
+  { key: 'Z4', name: 'Threshold', desc: 'Hard, about 20 minutes. Short breathing, long focus.', from: 0.8, to: 0.9 },
+  { key: 'Z5', name: 'Max', desc: 'Sprints, under a minute. Motionry tells you when you stay here too long.', from: 0.9, to: 1 },
 ];
+const ZONE_VARS = ['var(--z1)', 'var(--z2)', 'var(--z3)', 'var(--z4)', 'var(--z5)'];
 
-/** Closed loop used for every route drawing on the page (200×200 viewBox). */
-const ROUTE = 'M42,150 C28,118 40,88 64,74 S104,36 132,46 S176,72 168,104 S138,132 150,156 S128,188 98,178 S60,176 42,150 Z';
+/** The heart rates shown on the live screens in assets/img/screens/live-z1…z5. */
+const HERO_BPM = [78, 117, 143, 156, 177];
+/** Order the hero climbs and falls through the zones. */
+const HERO_PATH = [0, 1, 2, 3, 4, 3, 2, 1];
 
-/** Heart-rate waypoints the simulated ride loops through. */
-const HR_WAYPOINTS = [106, 114, 122, 130, 138, 144, 150, 156, 162, 170, 178, 172, 160, 148, 136, 124];
-
-const MAP_MODES = {
-  hr: {
-    colors: ['var(--z2-d)', 'var(--z3)', 'var(--z4)', 'oklch(0.66 0.21 27)', 'var(--z4)', 'var(--z3)'],
-    tip: { main: '176 bpm', sub: 'Z5 · km 18.4', dot: 'oklch(0.66 0.21 27)' },
-  },
-  speed: {
-    colors: ['#9a9a9a', '#5e5e5e', '#2b2b2b', '#000', '#2b2b2b', '#5e5e5e'],
-    tip: { main: '31.2 km/h', sub: 'km 18.4', dot: '#000' },
-  },
-  climb: {
-    colors: ['#c9c9c9', '#8a8a8a', '#000', '#000', '#5e5e5e', '#9a9a9a'],
-    tip: { main: '214 m', sub: 'km 18.4', dot: '#000' },
-  },
+const zoneIndexOf = (hr, max) => {
+  const pct = hr / max;
+  return pct < 0.6 ? 0 : pct < 0.7 ? 1 : pct < 0.8 ? 2 : pct < 0.9 ? 3 : 4;
 };
 
-const SPORTS = {
-  ride: { name: 'Ride', elapsedStart: 4722 },
-  run: { name: 'Run', elapsedStart: 2592 },
-  walk: { name: 'Walk', elapsedStart: 2285 },
-};
-
-/**
- * Hero screen metrics for each sport at simulated time t and heart rate hr.
- * Returns the big left metric plus the three stats under the zone bar.
- */
-function sportMetrics(sport, t, hr) {
-  if (sport === 'run') {
-    const pace = Math.round(330 - (hr - 106) * 1.2 + Math.sin(t * 0.7) * 4);
-    return {
-      label: 'Pace',
-      value: `${Math.floor(pace / 60)}:${String(pace % 60).padStart(2, '0')}`,
-      unit: '/km',
-      stats: [
-        ['Distance', (8.42 + t * 0.003).toFixed(2), 'km'],
-        ['Cadence', String(170 + Math.round(Math.sin(t) * 2)), 'spm'],
-        ['Stride', '1.14', 'm'],
-      ],
-    };
-  }
-  if (sport === 'walk') {
-    return {
-      label: 'Steps',
-      value: (6812 + Math.floor(t * 1.8)).toLocaleString('en-US'),
-      unit: 'today +4,930',
-      stats: [
-        ['Distance', (4.21 + t * 0.0012).toFixed(2), 'km'],
-        ['Pace', '12:21', '/km'],
-        ['Calories', String(238 + Math.floor(t * 0.1)), 'kcal'],
-      ],
-    };
-  }
-  return {
-    label: 'Speed',
-    value: (20 + (hr - 105) * 0.19 + Math.sin(t * 0.7) * 0.5).toFixed(1),
-    unit: 'km/h',
-    stats: [
-      ['Distance', (32.6 + t * 0.007).toFixed(1), 'km'],
-      ['Avg HR', '141', ''],
-      ['Climb', '+412', 'm'],
-    ],
+/** Ease-out tween of a number. */
+function tween(from, to, ms, onUpdate) {
+  if (reduced) { onUpdate(to); return; }
+  const start = performance.now();
+  const step = (now) => {
+    const p = clamp((now - start) / ms, 0, 1);
+    const e = 1 - (1 - p) ** 3;
+    onUpdate(from + (to - from) * e);
+    if (p < 1) requestAnimationFrame(step);
   };
+  requestAnimationFrame(step);
 }
 
-/* Helpers
+/** Runs `fn` while `el` is on screen and the tab is visible. */
+function whileVisible(el, start, stop, margin = '0px') {
+  let seen = false;
+  const sync = () => (seen && !document.hidden ? start() : stop());
+  new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; sync(); }, { rootMargin: margin }).observe(el);
+  document.addEventListener('visibilitychange', sync);
+}
+
+/* Navigation and scroll progress
    ========================================================================== */
 
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+function initNav() {
+  const nav = $('[data-nav]');
+  const toggle = $('[data-nav-toggle]');
+  const links = $('#nav-links');
+  const bar = $('[data-progress]');
 
-const zoneIndexOf = (hr) => (hr < 110 ? 0 : hr < 129 ? 1 : hr < 147 ? 2 : hr < 166 ? 3 : 4);
+  const onScroll = () => {
+    nav.classList.toggle('is-stuck', window.scrollY > 24);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.setProperty('--p', max > 0 ? clamp(window.scrollY / max, 0, 1).toFixed(4) : 0);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
-/** Smoothly interpolated heart rate at simulated time t (seconds). */
-function heartRateAt(t) {
-  const n = HR_WAYPOINTS.length;
-  const pos = (((t / 3) % n) + n) % n;
-  const i = Math.floor(pos);
-  const f = pos - i;
-  const ease = f * f * (3 - 2 * f);
-  const from = HR_WAYPOINTS[i];
-  const to = HR_WAYPOINTS[(i + 1) % n];
-  return Math.round(from + (to - from) * ease + Math.sin(t * 1.9) * 1.6);
-}
+  const close = () => { links.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); };
+  toggle.addEventListener('click', () => {
+    const open = links.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open);
+  });
+  links.addEventListener('click', (e) => { if (e.target.closest('a')) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 
-/** Maps a heart rate (100–185 bpm) to the live chart's 120-unit-high viewBox. */
-const chartY = (hr) => (120 - ((hr - 100) / 85) * 120).toFixed(1);
-
-function formatDuration(seconds) {
-  const s = Math.floor(seconds);
-  const h = Math.floor(s / 3600);
-  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-  const sec = String(s % 60).padStart(2, '0');
-  return `${h}:${m}:${sec}`;
-}
-
-function setText(name, value) {
-  $$(`[data-live="${name}"]`).forEach((el) => { el.textContent = value; });
-}
-
-/* Routes
-   ========================================================================== */
-
-function initRoutes() {
-  $$('path[data-route]').forEach((path) => path.setAttribute('d', ROUTE));
-}
-
-/* Live simulation (hero, strip, watch, share card)
-   ========================================================================== */
-
-function initLiveRide() {
-  const root = document.documentElement;
-  const segmentGroups = $$('[data-live="segments"]').map((group) => [...group.children]);
-  const metrics = $('[data-live="metrics"]');
-  const sportIcon = $('[data-live="sport-icon"]');
-  const routeProgress = $('[data-live="route-progress"]');
-  const routeDot = $('[data-live="route-dot"]');
-  const routeLength = routeProgress.getTotalLength();
-  const alert = $('[data-live="alert"]');
-  const spark = $('[data-live="spark"]');
-  const flyRoute = $('[data-live="fly-route"]');
-  const flyProgress = $('[data-live="fly-progress"]');
-
-  const STEP = 0.4; // simulated seconds per tick
-  let t = 0;
-  let sport = 'ride';
-
-  function render() {
-    const baseHr = heartRateAt(t);
-    // Walks sit lower on the heart rate curve
-    const hr = sport === 'walk' ? Math.round(92 + (baseHr - 106) * 0.32) : baseHr;
-    const zi = zoneIndexOf(hr);
-    const zone = ZONES[zi];
-
-    root.style.setProperty('--zc', zone.colorDark);
-
-    setText('hr', hr);
-    setText('zone-label', `${zone.key} ${zone.name}`);
-    setText('zone-long', `${zone.key} · ${zone.name} · ${hr} bpm`);
-    setText('elapsed', formatDuration(SPORTS[sport].elapsedStart + t));
-
-    const m = sportMetrics(sport, t, hr);
-    setText('m1-label', m.label);
-    setText('m1', m.value);
-    setText('m1-unit', m.unit);
-    m.stats.forEach(([label, value, unit], i) => {
-      setText(`stat-label-${i}`, label);
-      setText(`stat-value-${i}`, value);
-      setText(`stat-unit-${i}`, unit);
+  const map = new Map($$('.nav__link').map((a) => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      map.forEach((a) => a.classList.remove('is-active'));
+      map.get(entry.target.id)?.classList.add('is-active');
     });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  map.forEach((a, id) => { const section = document.getElementById(id); if (section) io.observe(section); });
+}
 
-    segmentGroups.forEach((segs) => segs.forEach((seg, i) => seg.classList.toggle('is-active', i === zi)));
-    alert.classList.toggle('is-shown', zi === 4);
+/* Reveal on scroll
+   ========================================================================== */
 
-    const progress = (t * 1.2) % 100;
-    routeProgress.setAttribute('stroke-dasharray', `${progress.toFixed(2)} 100`);
-    const point = routeProgress.getPointAtLength((routeLength * progress) / 100);
-    routeDot.setAttribute('cx', point.x.toFixed(1));
-    routeDot.setAttribute('cy', point.y.toFixed(1));
+function initReveal() {
+  const targets = $$('[data-reveal]');
+  targets.forEach((el) => el.style.setProperty('--reveal-i', el.dataset.reveal || 0));
+  const seen = $$('.tile, .download');
 
-    // The live strip always charts the ride curve, independent of the hero sport
-    const points = [];
-    for (let i = 0; i < 60; i++) {
-      const sampleT = t - (59 - i) * 0.5;
-      points.push(`${((i * 1000) / 59).toFixed(1)},${chartY(heartRateAt(sampleT))}`);
-    }
-    spark.setAttribute('points', points.join(' '));
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('is-visible'));
+    seen.forEach((el) => el.classList.add('is-seen'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      if (entry.target.matches('.tile, .download')) entry.target.classList.add('is-seen');
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.14, rootMargin: '0px 0px -6% 0px' });
+  targets.forEach((el) => io.observe(el));
+  seen.forEach((el) => io.observe(el));
+}
 
-    const fly = (t * 4) % 100;
-    flyRoute.setAttribute('stroke-dasharray', `${fly.toFixed(1)} 100`);
-    flyProgress.style.width = `${fly.toFixed(1)}%`;
+/* Hero: a ride that climbs through the five zones
+   ========================================================================== */
+
+function initHero() {
+  const hero = $('[data-hero]');
+  const imgs = $$('[data-live-img]', hero);
+  const hrEl = $('[data-hr]', hero);
+  const nameEl = $('[data-zone-name]', hero);
+  const segs = $$('[data-segments] span', hero);
+  const alert = $('[data-alert]', hero);
+  let step = 0;
+  let current = HERO_BPM[0];
+  let timer = null;
+
+  function show(i) {
+    const hr = HERO_BPM[i];
+    imgs.forEach((img, k) => img.classList.toggle('is-on', k === i));
+    segs.forEach((s, k) => s.classList.toggle('is-active', k === i));
+    nameEl.textContent = `${ZONES[i].key} · ${ZONES[i].name}`;
+    hero.style.setProperty('--zc', ZONE_VARS[i]);
+    document.documentElement.style.setProperty('--beat', `${(60 / hr).toFixed(3)}s`);
+    alert.classList.toggle('is-on', i === 4);
+    tween(current, hr, 900, (v) => { hrEl.textContent = Math.round(v); });
+    current = hr;
   }
 
-  initSegmented($('[data-sports]'), 'data-sport', (next) => {
-    sport = next;
-    setText('sport-name', SPORTS[sport].name);
-    sportIcon.setAttribute('href', `#i-${sport}`);
-    metrics.classList.toggle('ride-screen__metrics--compact', sport === 'walk');
-    render();
-  });
+  function next() {
+    step = (step + 1) % HERO_PATH.length;
+    show(HERO_PATH[step]);
+    timer = setTimeout(next, HERO_PATH[step] === 4 ? 4200 : 2500);
+  }
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  show(reduced ? 2 : HERO_PATH[0]);
+  if (reduced) return;
+  whileVisible(hero, () => { if (!timer) timer = setTimeout(next, 2200); }, () => { clearTimeout(timer); timer = null; });
 
-  setInterval(() => {
-    if (document.hidden) return;
-    t += STEP;
-    render();
-  }, STEP * 1000);
+  // Pointer tilt for the phone (fine pointers only)
+  const tilt = $('[data-tilt]', hero);
+  if (tilt && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      tilt.style.setProperty('--ry', `${(-8 + x * 16).toFixed(2)}deg`);
+      tilt.style.setProperty('--rx', `${(3 - y * 10).toFixed(2)}deg`);
+    });
+    hero.addEventListener('pointerleave', () => { tilt.style.setProperty('--ry', '-8deg'); tilt.style.setProperty('--rx', '3deg'); });
+  }
 }
 
-/* Zone picker
+/* Story: one pinned phone, six chapters
+   ========================================================================== */
+
+function initStory() {
+  const root = $('[data-story]');
+  const chapters = $$('.chapter', root);
+  const layers = Object.fromEntries($$('[data-layer]', root).map((el) => [el.dataset.layer, el]));
+  const rail = $$('[data-rail]', root);
+  const live = $$('[data-story-live]', root);
+  const chip = $('[data-story-chip]', root);
+  const chipText = $('[data-story-chip-text]', root);
+  const chipDot = $('.story__zone-dot', root);
+  const cycleLayers = Object.fromEntries($$('[data-cycle]', root).map((el) => [el.dataset.layer, el]));
+  let liveStep = 0;
+  let cycleTimer = null;
+  let liveTimer = null;
+  let active = null;
+
+  const setLive = (i) => {
+    live.forEach((img, k) => img.classList.toggle('is-on', k === i));
+    chipText.textContent = `${ZONES[i].key} · ${ZONES[i].name} · ${HERO_BPM[i]} bpm`;
+    chipDot.style.background = ZONE_VARS[i];
+    chipDot.style.color = ZONE_VARS[i];
+  };
+  const startLive = () => {
+    if (liveTimer || reduced) return;
+    liveTimer = setInterval(() => { liveStep = (liveStep + 1) % 5; setLive(liveStep); }, 1900);
+  };
+  const stopLive = () => { clearInterval(liveTimer); liveTimer = null; };
+
+  /** Steps through the stills of a layer; the chips of the chapter follow when they are marked data-sync. */
+  function startCycle(name) {
+    clearInterval(cycleTimer);
+    const layer = cycleLayers[name];
+    if (!layer) return;
+    const imgs = $$('img', layer);
+    const chips = $$(`.chapter[data-chapter="${name}"] [data-sync] li`, root);
+    let i = 0;
+    const show = (k) => {
+      imgs.forEach((img, n) => img.classList.toggle('is-on', n === k));
+      chips.forEach((chip, n) => chip.classList.toggle('is-on', n === k % chips.length));
+    };
+    show(0);
+    if (reduced) return;
+    cycleTimer = setInterval(() => { i = (i + 1) % imgs.length; show(i); }, Number(layer.dataset.cycle) || 2400);
+  }
+
+  function activate(name, index) {
+    if (name === active) return;
+    active = name;
+    chapters.forEach((c) => c.classList.toggle('is-active', c.dataset.chapter === name));
+    rail.forEach((d, i) => d.classList.toggle('is-on', i === index));
+    Object.entries(layers).forEach(([key, el]) => el.classList.toggle('is-on', key === name));
+    chip.classList.toggle('is-off', name !== 'live');
+    clearInterval(cycleTimer);
+    if (name === 'live') { setLive(liveStep); startLive(); } else { stopLive(); startCycle(name); }
+  }
+
+  setLive(0);
+  chapters.forEach((c, i) => c.dataset.index = i);
+  rail[0].classList.add('is-on');
+  activate('live', 0);
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) activate(entry.target.dataset.chapter, Number(entry.target.dataset.index));
+    });
+  }, { rootMargin: '-42% 0px -42% 0px' });
+  chapters.forEach((c) => io.observe(c));
+}
+
+/* Zones: pick a zone, set your own max heart rate
    ========================================================================== */
 
 function initZones() {
-  const list = $('[data-zone-list]');
-  const detail = $('[data-zone-detail]');
-  const field = (name) => $(`[data-zone-field="${name}"]`, detail);
+  const root = $('[data-zones]');
+  const list = $('[data-zone-list]', root);
+  const input = $('[data-maxhr]', root);
+  const beatEl = $('.beat', root);
+  const beatBpm = $('[data-beat-bpm]', root);
+  let max = 184;
+  let selected = 2;
+  let auto = null;
+  let shown = 141;
 
-  list.innerHTML = ZONES.map((zone, i) => `
-    <button type="button" class="zone-row" role="option" data-zone="${i}" style="--c:${zone.color}">
-      <span class="zone-row__bar"></span>
-      <span class="zone-row__text">
-        <span class="zone-row__name">${zone.key} · ${zone.name}</span>
-        <span class="zone-row__desc">${zone.desc}</span>
-      </span>
-      <span class="zone-row__range">${zone.range}</span>
-    </button>
-  `).join('');
+  const lo = (z) => Math.round(ZONES[z].from * max);
+  const range = (z) => (z === 0 ? `<${lo(1)}` : z === 4 ? `${lo(4)}+` : `${lo(z)}–${lo(z + 1) - 1}`);
+  const mid = (z) => (z === 0 ? Math.round(max * 0.5) : z === 4 ? Math.round(max * 0.95) : Math.round((lo(z) + lo(z + 1) - 1) / 2));
 
-  const rows = $$('.zone-row', list);
-
-  function select(index) {
-    const zone = ZONES[index];
-    rows.forEach((row, i) => {
-      row.classList.toggle('is-active', i === index);
-      row.setAttribute('aria-selected', i === index);
-    });
-    detail.style.background = zone.color;
-    detail.style.color = zone.fg;
-    field('title').textContent = `${zone.key} · ${zone.name}`;
-    field('range').textContent = zone.range;
-    field('pct').textContent = zone.pct;
-    field('desc').textContent = `${zone.desc}.`;
+  function build() {
+    list.innerHTML = ZONES.map((z, i) => `
+      <button type="button" role="tab" class="zone-row" data-zone="${i}" style="--c:${ZONE_VARS[i]}" aria-selected="${i === selected}">
+        <span class="zone-row__main">
+          <span class="zone-row__swatch"></span>
+          <span class="zone-row__name"><b>${z.name}</b><small>${z.key} · ${Math.round(z.from * 100)}${z.to === 1 ? '%+' : '–' + Math.round(z.to * 100) + '%'} of max</small></span>
+          <span class="zone-row__range" data-range="${i}">${range(i)}</span>
+        </span>
+        <span class="zone-row__more"><div><p>${z.desc}</p></div></span>
+      </button>`).join('');
+    select(selected, false);
   }
 
-  list.addEventListener('click', (event) => {
-    const row = event.target.closest('[data-zone]');
-    if (row) select(Number(row.dataset.zone));
+  function select(i, userInitiated = true) {
+    selected = i;
+    $$('.zone-row', list).forEach((row, k) => {
+      row.classList.toggle('is-active', k === i);
+      row.setAttribute('aria-selected', k === i);
+    });
+    root.style.setProperty('--zc', ZONE_VARS[i]);
+    const bpm = mid(i);
+    beatEl.style.setProperty('--beat', `${(60 / bpm).toFixed(3)}s`);
+    tween(shown, bpm, 700, (v) => { beatBpm.textContent = Math.round(v); });
+    shown = bpm;
+    if (userInitiated) stopAuto();
+  }
+
+  function refresh() {
+    $$('[data-range]', list).forEach((el) => { el.textContent = range(Number(el.dataset.range)); });
+    select(selected, false);
+  }
+
+  const startAuto = () => { if (!auto && !reduced) auto = setInterval(() => select((selected + 1) % 5, false), 3200); };
+  const stopAuto = () => { clearInterval(auto); auto = null; };
+
+  list.addEventListener('click', (e) => { const row = e.target.closest('[data-zone]'); if (row) select(Number(row.dataset.zone)); });
+  list.addEventListener('pointerenter', stopAuto);
+
+  const setMax = (v) => { max = clamp(Math.round(v) || 184, 140, 220); input.value = max; refresh(); };
+  input.addEventListener('input', () => { const v = Number(input.value); if (v >= 140 && v <= 220) { max = v; refresh(); } });
+  input.addEventListener('change', () => setMax(Number(input.value)));
+  $$('[data-maxhr-step]', root).forEach((b) => b.addEventListener('click', () => setMax(max + Number(b.dataset.maxhrStep))));
+  $('[data-maxhr-age]', root).addEventListener('click', () => {
+    const age = Number(window.prompt('How old are you?', '36'));
+    if (age >= 10 && age <= 90) setMax(220 - age);
   });
 
-  select(2);
+  build();
+  whileVisible(root, startAuto, stopAuto);
 }
 
-/* Segmented controls
+/* Sports: ride, run, walk
    ========================================================================== */
 
-function initSegmented(container, attr, onChange) {
-  const buttons = $$(`[${attr}]`, container);
+function initSports() {
+  const root = $('[data-sports]');
+  const tabs = $$('[data-sport]', root);
+  const arts = $$('[data-art]', root);
+  const screens = $$('[data-sport-img]', root);
+  const label = $('[data-sport-label]', root);
+  const valueEl = $('[data-sport-value]', root);
+  const unit = $('[data-sport-unit]', root);
+  const hrEl = $('[data-sport-hr]', root);
+  const hrUnit = hrEl.nextElementSibling;
+  const pause = $('[data-sport-pause]', root);
+  const SPORT = [
+    { label: 'Speed', unit: 'km/h', base: 24.1, hr: 143, pause: 'On', fmt: (v) => v.toFixed(1) },
+    { label: 'Pace', unit: '/km', base: 308, hr: 158, pause: 'Off', fmt: (v) => `${Math.floor(v / 60)}:${String(Math.round(v % 60)).padStart(2, '0')}` },
+    { label: 'Steps', unit: 'today', base: 6812, hr: 96, pause: 'On', fmt: (v) => Math.round(v).toLocaleString('en-US') },
+  ];
+  let idx = 0;
+  let tick = 0;
+  let timer = null;
+  let live = null;
 
-  function activate(button) {
-    buttons.forEach((b) => {
-      const active = b === button;
-      b.classList.toggle('is-active', active);
-      b.setAttribute('aria-selected', active);
-    });
-    onChange(button.getAttribute(attr));
+  function render() {
+    const s = SPORT[idx];
+    const wobble = Math.sin(tick * 0.9) + Math.sin(tick * 0.37) * 0.6;
+    const v = idx === 1 ? s.base + wobble * 4 : idx === 2 ? s.base + tick * 3 : s.base + wobble * 0.5;
+    const hr = Math.round(s.hr + wobble * 2.4);
+    valueEl.textContent = s.fmt(v);
+    hrEl.textContent = hr;
+    hrUnit.textContent = `bpm · ${ZONES[zoneIndexOf(hr, 184)].key}`;
   }
 
-  container.addEventListener('click', (event) => {
-    const button = event.target.closest(`[${attr}]`);
-    if (button) activate(button);
-  });
+  function select(i, user = false) {
+    idx = i;
+    tabs.forEach((t, k) => { t.classList.toggle('is-active', k === i); t.setAttribute('aria-selected', k === i); });
+    arts.forEach((a, k) => a.classList.toggle('is-on', k === i));
+    screens.forEach((a, k) => a.classList.toggle('is-on', k === i));
+    const s = SPORT[i];
+    label.textContent = s.label; unit.textContent = s.unit; pause.textContent = s.pause;
+    render();
+    if (user) { clearInterval(timer); timer = null; }
+  }
 
-  activate(buttons.find((b) => b.classList.contains('is-active')) || buttons[0]);
+  tabs.forEach((t, k) => t.addEventListener('click', () => select(k, true)));
+  select(0);
+  if (reduced) return;
+  whileVisible(root, () => {
+    if (!timer) timer = setInterval(() => select((idx + 1) % 3), 5200);
+    if (!live) live = setInterval(() => { tick += 1; render(); }, 1100);
+  }, () => { clearInterval(timer); clearInterval(live); timer = live = null; });
 }
 
-function initRideMap() {
-  const segments = $$('[data-map-segments] path');
-  const card = $('.ride-map__card');
+/* Watch: a crown-turn through the screens
+   ========================================================================== */
 
-  initSegmented($('[data-map-modes]'), 'data-mode', (mode) => {
-    const { colors, tip } = MAP_MODES[mode];
-    segments.forEach((seg, i) => { seg.style.stroke = colors[i]; });
-    card.style.setProperty('--tip', tip.dot);
-    $('[data-tip="main"]', card).textContent = tip.main;
-    $('[data-tip="sub"]', card).textContent = tip.sub;
+function initWatch() {
+  const root = $('[data-watch]');
+  const imgs = $$('[data-watch-img]', root);
+  const dotsWrap = $('[data-watch-dots]', root);
+  const caption = $('[data-watch-caption]', root);
+  const crown = $('.watch__crown', root);
+  const CAPTIONS = ['Pick a sport', 'Ride: speed and zones', 'Run: pace, zones, cadence', 'Walk: steps and heart rate', 'Pause, lap, lock', 'Done, and on your iPhone'];
+  let idx = 0;
+  let timer = null;
+
+  dotsWrap.innerHTML = imgs.map((_, i) => `<button type="button" role="tab" aria-label="${CAPTIONS[i]}" data-i="${i}"></button>`).join('');
+  const dots = $$('button', dotsWrap);
+
+  function select(i, user = false) {
+    idx = i;
+    imgs.forEach((img, k) => img.classList.toggle('is-on', k === i));
+    dots.forEach((d, k) => { d.classList.toggle('is-on', k === i); d.setAttribute('aria-selected', k === i); });
+    caption.textContent = CAPTIONS[i];
+    crown.classList.add('is-turning');
+    setTimeout(() => crown.classList.remove('is-turning'), 320);
+    if (user) { clearInterval(timer); timer = null; }
+  }
+  dotsWrap.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) select(Number(b.dataset.i), true); });
+  select(0);
+  if (reduced) return;
+  whileVisible(root, () => { if (!timer) timer = setInterval(() => select((idx + 1) % imgs.length), 2800); }, () => { clearInterval(timer); timer = null; });
+}
+
+/* Counters, bento toggles and the drag-to-finish slider
+   ========================================================================== */
+
+function initBento() {
+  $$('[data-count]').forEach((el) => {
+    const target = Number(el.dataset.count);
+    const decimals = Number(el.dataset.decimals || 0);
+    const tile = el.closest('.tile');
+    const run = () => tween(0, target, 1400, (v) => { el.textContent = v.toFixed(decimals); });
+    if (reduced) return;
+    el.textContent = (0).toFixed(decimals);
+    new MutationObserver((_, obs) => { if (tile.classList.contains('is-seen')) { run(); obs.disconnect(); } }).observe(tile, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  const sources = $$('[data-source]');
+  sources.forEach((s) => s.addEventListener('click', () => {
+    sources.forEach((o) => { const on = o === s; o.classList.toggle('is-active', on); o.setAttribute('aria-pressed', on); });
+  }));
+
+  const drag = $('[data-drag]');
+  const handle = $('[data-drag-handle]', drag);
+  let startX = 0; let base = 0; let dragging = false; let timer = null;
+  const maxX = () => drag.clientWidth - handle.offsetWidth - 12;
+  const setX = (x) => drag.style.setProperty('--x', `${clamp(x, 0, maxX())}px`);
+  const finish = () => {
+    setX(maxX());
+    drag.classList.add('is-done');
+    clearTimeout(timer);
+    timer = setTimeout(() => { drag.classList.remove('is-done'); setX(0); }, 3200);
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    if (drag.classList.contains('is-done')) return;
+    dragging = true; startX = e.clientX; base = parseFloat(getComputedStyle(drag).getPropertyValue('--x')) || 0;
+    handle.setPointerCapture(e.pointerId); handle.classList.add('is-dragging');
+  });
+  handle.addEventListener('pointermove', (e) => { if (dragging) setX(base + e.clientX - startX); });
+  const release = () => {
+    if (!dragging) return;
+    dragging = false; handle.classList.remove('is-dragging');
+    const x = parseFloat(getComputedStyle(drag).getPropertyValue('--x')) || 0;
+    x > maxX() * 0.82 ? finish() : setX(0);
+  };
+  handle.addEventListener('pointerup', release);
+  handle.addEventListener('pointercancel', release);
+  handle.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); } });
+}
+
+/* The share video plays only while it is on screen
+   ========================================================================== */
+
+function initClips() {
+  if (reduced) return;
+  $$('video[data-autoplay]').forEach((v) => whileVisible(v, () => v.play().catch(() => {}), () => v.pause(), '100px'));
+}
+
+/* Phones that step through a few screens while they are on screen
+   ========================================================================== */
+
+function initCycles() {
+  $$('.phone__screen[data-cycle]').filter((el) => !el.closest('[data-story]')).forEach((el) => {
+    const imgs = $$('img', el);
+    let i = 0;
+    let timer = null;
+    const show = (k) => imgs.forEach((img, n) => img.classList.toggle('is-on', n === k));
+    if (reduced) return;
+    whileVisible(el, () => { if (!timer) timer = setInterval(() => { i = (i + 1) % imgs.length; show(i); }, Number(el.dataset.cycle) || 2400); }, () => { clearInterval(timer); timer = null; });
   });
 }
 
@@ -294,7 +464,6 @@ function initRideMap() {
 function initWaitlist() {
   const form = $('[data-waitlist]');
   const done = $('[data-waitlist-done]');
-
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const email = form.elements.email.value.trim();
@@ -306,38 +475,17 @@ function initWaitlist() {
   });
 }
 
-/* Scroll reveal
-   ========================================================================== */
-
-function initReveal() {
-  const targets = $$('[data-reveal], [data-seen]');
-  targets.forEach((el) => {
-    if (el.dataset.reveal) el.style.setProperty('--reveal-i', el.dataset.reveal);
-  });
-
-  if (!('IntersectionObserver' in window)) {
-    targets.forEach((el) => el.classList.add('is-visible', 'is-seen'));
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target;
-      el.classList.add(el.hasAttribute('data-seen') ? 'is-seen' : 'is-visible');
-      observer.unobserve(el);
-    });
-  }, { threshold: 0.15 });
-
-  targets.forEach((el) => observer.observe(el));
-}
-
 /* Boot
    ========================================================================== */
 
-initRoutes();
-initLiveRide();
-initZones();
-initRideMap();
-initWaitlist();
+initNav();
 initReveal();
+initHero();
+initStory();
+initZones();
+initSports();
+initWatch();
+initBento();
+initCycles();
+initClips();
+initWaitlist();

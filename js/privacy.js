@@ -18,3 +18,6 @@ if ('IntersectionObserver' in window) {
 
   sections.forEach((section) => observer.observe(section));
 }
+
+// The coloured zone strip above the download band draws in once the page is ready
+document.querySelectorAll('.download').forEach((el) => el.classList.add('is-seen'));
