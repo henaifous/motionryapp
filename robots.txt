@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://motionryapp.com/sitemap.xml
