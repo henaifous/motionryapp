@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Heart Rate Zone Calculator: Your 5 Zones & Zone 2 · Motionry</title>
+  <meta name="description" content="Free heart rate zone calculator. Enter your age or max heart rate to get your five zones in bpm, including Zone 2. The same zones Motionry shows live.">
+  <meta name="theme-color" content="#0B0B0C">
+  <link rel="canonical" href="https://motionryapp.com/heart-rate-zone-calculator/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Motionry">
+  <meta property="og:title" content="Heart Rate Zone Calculator · Motionry">
+  <meta property="og:description" content="Get your five heart rate zones, and your Zone 2 range, from your age or max heart rate. Free, and nothing is saved.">
+  <meta property="og:url" content="https://motionryapp.com/heart-rate-zone-calculator/">
+  <meta property="og:image" content="https://motionryapp.com/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="apple-itunes-app" content="app-id=6770678614">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://motionryapp.com/heart-rate-zone-calculator/#app",
+        "name": "Heart rate zone calculator",
+        "url": "https://motionryapp.com/heart-rate-zone-calculator/",
+        "description": "Calculate your five heart rate zones, and your Zone 2 range, from your age or max heart rate.",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "publisher": { "@id": "https://motionryapp.com/#organization" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Motionry", "item": "https://motionryapp.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Heart rate zone calculator" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script src="/js/page.js" defer></script>
+  <script src="/js/calculator.js" defer></script>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2.1 1-3.3-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.2 1.2.1 2.3-.6 3.1-1.5z"/></symbol>
+</svg>
+
+<header class="nav is-stuck">
+  <div class="nav__bar">
+    <a href="/" class="brand" aria-label="Motionry home">
+      <img src="/assets/img/icon-192.png" alt="" width="34" height="34" class="brand__icon">
+      <span class="brand__name">Motionry</span>
+    </a>
+    <nav class="nav__links" id="nav-links" aria-label="Primary">
+      <a href="/#story" class="nav__link">App</a>
+      <a href="/#zones" class="nav__link">Zones</a>
+      <a href="/#sports" class="nav__link">Sports</a>
+      <a href="/#watch" class="nav__link">Watch</a>
+      <a href="/#share" class="nav__link">Share</a>
+      <a href="/privacy.html" class="nav__link">Privacy</a>
+      <a href="/#pro" class="nav__link">Pro</a>
+    </nav>
+    <a href="/#get" class="btn btn--lime btn--sm nav__cta"><svg><use href="#i-apple"/></svg><span>Get the app</span></a>
+    <button class="nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links" data-nav-toggle><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <section class="policy-hero">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Motionry</a></li>
+          <li aria-current="page">Heart rate zone calculator</li>
+        </ol>
+      </nav>
+      <div class="eyebrow">Free tool</div>
+      <h1 class="display-md">Heart rate zone calculator</h1>
+      <p class="lead lead--dark">Enter your age or your max heart rate and get your five zones in beats per minute, including your Zone 2 range. They are the same zones Motionry fills your screen with while you ride, run or walk.</p>
+      <div class="policy-meta">
+        <span>Free</span>
+        <span>Runs in your browser</span>
+        <span>Nothing is saved</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section class="calc-sec" aria-labelledby="calc-title">
+    <div class="container">
+      <h2 id="calc-title" class="sr-only">Calculate your heart rate zones</h2>
+      <div class="calc" data-calc>
+
+        <form class="calc__form" novalidate>
+          <fieldset class="field">
+            <legend class="field__label">Max heart rate</legend>
+            <div class="seg">
+              <input type="radio" name="src" id="src-220" value="220" checked><label for="src-220">220 − age</label>
+              <input type="radio" name="src" id="src-tanaka" value="tanaka"><label for="src-tanaka">Tanaka</label>
+              <input type="radio" name="src" id="src-known" value="known"><label for="src-known">I know mine</label>
+            </div>
+            <p class="field__hint">Not sure? Start with 220 − age. <a class="textlink" href="#how">How these differ</a></p>
+          </fieldset>
+
+          <div class="field" data-field="age">
+            <label for="calc-age">Your age</label>
+            <div class="num"><input id="calc-age" type="number" inputmode="numeric" min="10" max="90" value="36"><span>years</span></div>
+          </div>
+
+          <div class="field" data-field="max" hidden>
+            <label for="calc-max">Your max heart rate</label>
+            <div class="num"><input id="calc-max" type="number" inputmode="numeric" min="120" max="230" value="184"><span>bpm</span></div>
+            <p class="field__hint">The highest heart rate you have reached in a hard effort, from a chest strap or a watch.</p>
+          </div>
+
+          <fieldset class="field">
+            <legend class="field__label">Zones based on</legend>
+            <div class="seg">
+              <input type="radio" name="basis" id="basis-max" value="max" checked><label for="basis-max">% of max</label>
+              <input type="radio" name="basis" id="basis-hrr" value="hrr"><label for="basis-hrr">Heart rate reserve</label>
+            </div>
+            <p class="field__hint">Motionry uses % of max heart rate. Heart rate reserve is the Karvonen method.</p>
+          </fieldset>
+
+          <div class="field" data-field="rest" hidden>
+            <label for="calc-rest">Your resting heart rate</label>
+            <div class="num"><input id="calc-rest" type="number" inputmode="numeric" min="30" max="120" value="60"><span>bpm</span></div>
+            <p class="field__hint">Measure it first thing in the morning, before you get out of bed.</p>
+          </div>
+        </form>
+
+        <div class="calc__out" data-out>
+          <div class="calc__top">
+            <div>
+              <span class="mono-label">Your max heart rate</span>
+              <div class="calc__max"><strong data-max>184</strong><span>bpm</span></div>
+            </div>
+            <p class="calc__sum" aria-live="polite" data-summary>Zone 2 is 110–128 bpm.</p>
+          </div>
+          <p class="calc__error" role="alert" data-error></p>
+
+          <div class="calc__zones">
+            <div class="zrow" data-zone="0" style="--c: var(--z1)">
+              <span class="zrow__swatch"></span>
+              <div class="zrow__txt"><b>Recovery</b><small>Z1 · under 60% of max</small><p>Easy effort. Warm-ups, cool-downs and rest days.</p></div>
+              <span class="zrow__range" data-range>&lt;110</span>
+            </div>
+            <div class="zrow" data-zone="1" style="--c: var(--z2)">
+              <span class="zrow__swatch"></span>
+              <div class="zrow__txt"><b>Endurance</b><small>Z2 · 60–70% of max</small><p>Can hold a conversation. Where the long, easy miles build your base.</p></div>
+              <span class="zrow__range" data-range>110–128</span>
+            </div>
+            <div class="zrow" data-zone="2" style="--c: var(--z3)">
+              <span class="zrow__swatch"></span>
+              <div class="zrow__txt"><b>Tempo</b><small>Z3 · 70–80% of max</small><p>Comfortably hard. Steady work you can sustain for a while.</p></div>
+              <span class="zrow__range" data-range>129–146</span>
+            </div>
+            <div class="zrow" data-zone="3" style="--c: var(--z4)">
+              <span class="zrow__swatch"></span>
+              <div class="zrow__txt"><b>Threshold</b><small>Z4 · 80–90% of max</small><p>Hard, about 20 minutes. Short breathing, long focus.</p></div>
+              <span class="zrow__range" data-range>147–165</span>
+            </div>
+            <div class="zrow" data-zone="4" style="--c: var(--z5)">
+              <span class="zrow__swatch"></span>
+              <div class="zrow__txt"><b>Max</b><small>Z5 · 90%+ of max</small><p>Sprints, under a minute.</p></div>
+              <span class="zrow__range" data-range>166+</span>
+            </div>
+          </div>
+
+          <div class="calc__check">
+            <label class="mono-label" for="calc-bpm">Which zone is this heart rate?</label>
+            <div class="num">
+              <input id="calc-bpm" type="number" inputmode="numeric" min="30" max="240" placeholder="142">
+              <span>bpm</span>
+              <strong data-match aria-live="polite"></strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference and explanation -->
+  <section class="policy-page">
+    <div class="container policy">
+      <nav class="policy-toc" aria-label="On this page">
+        <div class="mono-label">On this page</div>
+        <ul>
+          <li><a href="#by-age">Zone 2 by age</a></li>
+          <li><a href="#how">How zones are calculated</a></li>
+          <li><a href="#zones">What each zone is for</a></li>
+          <li><a href="#faq">Questions</a></li>
+        </ul>
+      </nav>
+
+      <div class="policy-body">
+
+        <section class="policy-section" id="by-age">
+          <h2>Zone 2 heart rate by age</h2>
+          <p>A quick reference that uses 220 − age as the max heart rate. Your own max can be 10 beats per minute or more away from this, so use the calculator above if you know yours.</p>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th scope="col">Age</th><th scope="col">Est. max</th><th scope="col">Zone 2</th><th scope="col">Zone 3</th><th scope="col">Zone 4</th><th scope="col">Zone 5</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>20</td><td>200</td><td class="is-z2">120–139</td><td>140–159</td><td>160–179</td><td>180+</td></tr>
+                <tr><td>25</td><td>195</td><td class="is-z2">117–136</td><td>137–155</td><td>156–175</td><td>176+</td></tr>
+                <tr><td>30</td><td>190</td><td class="is-z2">114–132</td><td>133–151</td><td>152–170</td><td>171+</td></tr>
+                <tr><td>35</td><td>185</td><td class="is-z2">111–129</td><td>130–147</td><td>148–166</td><td>167+</td></tr>
+                <tr><td>40</td><td>180</td><td class="is-z2">108–125</td><td>126–143</td><td>144–161</td><td>162+</td></tr>
+                <tr><td>45</td><td>175</td><td class="is-z2">105–121</td><td>122–139</td><td>140–157</td><td>158+</td></tr>
+                <tr><td>50</td><td>170</td><td class="is-z2">102–118</td><td>119–135</td><td>136–152</td><td>153+</td></tr>
+                <tr><td>55</td><td>165</td><td class="is-z2">99–114</td><td>115–131</td><td>132–148</td><td>149+</td></tr>
+                <tr><td>60</td><td>160</td><td class="is-z2">96–111</td><td>112–127</td><td>128–143</td><td>144+</td></tr>
+                <tr><td>65</td><td>155</td><td class="is-z2">93–108</td><td>109–123</td><td>124–139</td><td>140+</td></tr>
+                <tr><td>70</td><td>150</td><td class="is-z2">90–104</td><td>105–119</td><td>120–134</td><td>135+</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note">Heart rates are in beats per minute. Zone 1 is everything below the start of Zone 2. Zones are 60, 70, 80 and 90% of max, rounded to whole beats.</p>
+        </section>
+
+        <section class="policy-section" id="how">
+          <h2>How your zones are calculated</h2>
+          <p>Every zone is a band of your maximum heart rate. Zone 2 starts at 60% of your max and ends just before 70%, Zone 3 runs from 70 to 80%, Zone 4 from 80 to 90%, and Zone 5 is 90% and up. Your max heart rate is the one number that needs care, and there are three ways to get it:</p>
+          <ul class="policy-list">
+            <li><strong>Measured.</strong> The highest heart rate you have actually reached in a hard effort, recorded by a chest strap or a watch. This is the most accurate source, as long as you really reached your max.</li>
+            <li><strong>220 − age.</strong> The classic formula. It is quick, but it is an average for a whole population, and individual max heart rates often differ from it by 10 beats per minute or more.</li>
+            <li><strong>Tanaka, 208 − 0.7 × age.</strong> A formula from a 2001 analysis of many studies (Tanaka, Monahan and Seals). It gives a lower estimate than 220 − age under 40 and a higher one over 40.</li>
+          </ul>
+          <p>The calculator can also use <strong>heart rate reserve</strong>, also called the Karvonen method. Instead of a percentage of your max, each zone starts at your resting heart rate plus that percentage of the gap between resting and max. For the same max, it gives higher zone boundaries than the % of max method. Motionry uses % of max.</p>
+          <p>No formula knows how fit you are, how you handle heat or fatigue, or whether you take medication that changes your heart rate. Treat the result as a starting point, then adjust by how the effort feels.</p>
+        </section>
+
+        <section class="policy-section" id="zones">
+          <h2>What each zone is for</h2>
+          <ul class="zlist">
+            <li style="--c: var(--z1)"><p><b>Zone 1, Recovery.</b> Easy effort for warm-ups, cool-downs and rest days.</p></li>
+            <li style="--c: var(--z2)"><p><b>Zone 2, Endurance.</b> You can hold a conversation. The long, easy sessions that build your aerobic base happen here.</p></li>
+            <li style="--c: var(--z3)"><p><b>Zone 3, Tempo.</b> Comfortably hard. Steady work you can sustain for a while.</p></li>
+            <li style="--c: var(--z4)"><p><b>Zone 4, Threshold.</b> Hard, about the effort you can hold for 20 minutes. Breathing is short and focus is long.</p></li>
+            <li style="--c: var(--z5)"><p><b>Zone 5, Max.</b> Sprints and the last push of an interval, for under a minute at a time.</p></li>
+          </ul>
+          <div class="policy-callout">Want your zone on the screen while you move? Motionry fills your iPhone with your zone colour as you ride, run or walk, from your Apple Watch or a chest strap. <a class="textlink" href="https://apps.apple.com/app/motionry-run-ride-walk/id6770678614">Get it on the App Store</a>.</div>
+        </section>
+
+        <section class="policy-section" id="faq">
+          <h2>Questions</h2>
+          <div class="faq">
+            <details>
+              <summary>What is my Zone 2 heart rate?</summary>
+              <div><p>In this calculator, Zone 2 is 60 to 70% of your max heart rate. For a 36-year-old using 220 − age, that is 110 to 128 bpm. Enter your age or your max above to get your own range. A simple check is the talk test: in Zone 2 you can speak in full sentences.</p></div>
+            </details>
+            <details>
+              <summary>Is 220 − age accurate?</summary>
+              <div><p>It is an average, not a measurement. Individual max heart rates commonly sit 10 beats per minute or more above or below it. If you have a max from a hard effort that you trust, use that instead.</p></div>
+            </details>
+            <details>
+              <summary>Are the zones different for running and cycling?</summary>
+              <div><p>Many people reach a slightly lower max heart rate on the bike than when running, so zones set from a running max can feel too high on a ride. The formulas here are the same for both. If you split your time, use the max from the sport you do most, and adjust by feel.</p></div>
+            </details>
+            <details>
+              <summary>Can I use this with an Apple Watch?</summary>
+              <div><p>Yes. Any heart rate source works for checking which zone a number falls in. In Motionry, the zone colour follows the heart rate coming from your Apple Watch, or from a Bluetooth chest strap such as a Polar H10.</p></div>
+            </details>
+            <details>
+              <summary>Is anything I enter saved?</summary>
+              <div><p>No. The calculation runs in your browser, and nothing you type is sent anywhere or stored.</p></div>
+            </details>
+          </div>
+          <p class="fineprint">This calculator gives estimates for general fitness use and is not medical advice. If you have a heart condition, take medication that affects your heart rate, or are unsure whether hard exercise is safe for you, talk to a doctor before you train by heart rate zones.</p>
+        </section>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section class="download policy-end">
+    <div class="download__zones" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="container download__inner">
+      <div class="download__cta">
+        <h2 class="display-md">Hold the right <span class="hl-ink">effort.</span></h2>
+        <div class="download__buttons">
+          <a href="https://apps.apple.com/app/motionry-run-ride-walk/id6770678614" class="store-btn store-btn--ink">
+            <svg class="store-btn__logo"><use href="#i-apple"/></svg>
+            <span class="store-btn__text"><small>Download on the</small><strong>App Store</strong></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a href="/" class="brand brand--footer" aria-label="Motionry home">
+      <img src="/assets/img/icon-192.png" alt="" width="34" height="34" class="brand__icon" loading="lazy">
+      <span class="brand__name">Motionry</span>
+    </a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="/heart-rate-zone-calculator/" aria-current="page">Zone calculator</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:support@motionryapp.com">Support</a>
+      <a href="https://www.instagram.com/motionry.app/" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+    <p class="footer__legal">© 2026 Motionry. Apple, the Apple logo, iPhone and Apple Watch are trademarks of Apple Inc.</p>
+  </div>
+</footer>
+
+</body>
+</html>
